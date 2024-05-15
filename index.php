@@ -2,9 +2,9 @@
 
 $page = $_GET['page'];
 
-$dictionary = array( // on va utiliser ce dictionaire pour récupérer l'activité de l'utilisateur
+$dictionary = array( // we will use this dictionary to record the user's activity
     "date" => "",
-    "user_id" => "", // le user ID est une manière de déterminer si l'utilisateur ayant fait la requète est bien unique et différenciable, on fait un hash de l'user agent et de l'ip de l'utilisateur.
+    "user_id" => "", // the user ID is a way to determine if the user making the request is unique and distinguishable, we hash the user agent and the user's IP.
     "timestamp" => "",
     "user_agent" => "",
     "ip" => "",
@@ -14,60 +14,58 @@ $dictionary = array( // on va utiliser ce dictionaire pour récupérer l'activit
 
 function logger($stringToAdd) {
     $filePath = 'logs/log_'. date("Y-m-d") .'.json';
-    // cette fonction m'aide à formater et enregistrer l'activité des recherches dans les logs
+    // this function helps me format and save the search activity in the logs
     if (!file_exists($filePath)) {
         file_put_contents($filePath, "[\n", FILE_APPEND);
         file_put_contents($filePath, "]\n", FILE_APPEND);
     }
 
-    // Lire le contenu actuel du fichier
+    // Read the current content of the file
     $lines = file($filePath);
 
-    // Si le fichier a plus d'une ligne, et que la ligne précédente n'est pas la première ligne
+    // If the file has more than one line, and the previous line is not the first line
     if (count($lines) > 1 && trim($lines[count($lines) - 2]) !== "[") {
         $beforeLastLineIndex = count($lines) - 2;
         $lines[$beforeLastLineIndex] = rtrim($lines[$beforeLastLineIndex], "\n") . ",\n";
     }
 
-    // Insérer la nouvelle chaîne avant la dernière ligne
+    // Insert the new string before the last line
     array_splice($lines, -1, 0, $stringToAdd . PHP_EOL);
 
-    // Réécrire le fichier avec le contenu modifié
+    // Rewrite the file with the modified content
     file_put_contents($filePath, implode('', $lines));
 }
 
-
-
 // $jsonData = json_encode($dictionary);
 // php -S 127.0.0.1:80 -t . 
-// Fonction pour afficher le contenu d'un fichier
-// cette fonction est faillible RFI
-function afficher_contenu_fichier($page) {
+// Function to display the content of a file
+// this function is vulnerable to RFI
+function display_file_content($page) {
     
-    // Vérifier si le fichier existe
-    if (file_exists("pages/" . $page)) { // toute cette partie de la fonction va utiliser un docker pour aller chercher les fichiers dedans, l'idée est d'avoir une structure semblable à un OS linux normal sans pour autant compromettre les données dans le vrai serveur.
-        // Charger le contenu du fichier
-        $contenu = file_get_contents("pages/" . $page);
-		if ($contenu == "") {
+    // Check if the file exists
+    if (file_exists("pages/" . $page)) { // this part of the function will use a docker to fetch the files in it, the idea is to have a structure similar to a normal Linux OS without compromising the data on the real server.
+        // Load the content of the file
+        $content = file_get_contents("pages/" . $page);
+		if ($content == "") {
 			echo file_get_contents("pages/index.html");
 		}
-        echo $contenu;
+        echo $content;
     } else {
-        $contenu = file_get_contents("pages/index.html");
-        // Afficher le contenu
-        echo $contenu;
+        $content = file_get_contents("pages/index.html");
+        // Display the content
+        echo $content;
     }
 
     global $dictionary;
-    // Récupérer l'adresse IP du visiteur
+    // Get the visitor's IP address
     $ip = $_SERVER['REMOTE_ADDR'];
-    // Récupérer l'agent utilisateur du visiteur
+    // Get the visitor's user agent
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
-    // Récupérer la requête HTTP
+    // Get the HTTP request
     $request = $_SERVER['REQUEST_URI'];
-    // Récupérer la date et l'heure actuelles
+    // Get the current date and time
     $date = date("Y-m-d H:i:s");
-    // Récupérer le timestamp actuel
+    // Get the current timestamp
     $timestamp = time();
     $dictionary["date"] = $date;
     $dictionary["user_id"] = hash("sha256", $user_agent . $ip);
@@ -75,12 +73,12 @@ function afficher_contenu_fichier($page) {
     $dictionary["user_agent"] = $user_agent;
     $dictionary["ip"] = $ip;
     $dictionary["request"] = $request;
-    $dictionary["response"] = $contenu;
+    $dictionary["response"] = $content;
 
     logger(json_encode($dictionary));
 }
 
-// Appeler la fonction pour afficher le contenu du fichier spécifié dans ?page=
-afficher_contenu_fichier($page);
+// Call the function to display the content of the file specified in ?page=
+display_file_content($page);
 
 ?>
