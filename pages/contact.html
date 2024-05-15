@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>OverSee</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+    }
+  </script><link rel="stylesheet" href="../css/style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<main>
+    <script>
+        document.body.classList.add("dark");
+    </script>
+    <div class="relative flex flex-col h-[100vh] items-center justify-center bg-white dark:bg-black transition-bg">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="jumbo absolute -inset-[10px] opacity-50"></div>
+        </div>
+        <div class="container">
+          <form action="action_page.php">
+        
+            <label for="fname" style="color: white;">First Name</label>
+            <input type="text" id="fname" name="firstname" placeholder="Your name..">
+        
+            <label for="lname" style="color: white;">Last Name</label>
+            <input type="text" id="lname" name="lastname" placeholder="Your last name..">
+        
+            <label for="country" style="color: white;">Contient</label>
+            <select id="country" name="country" style="color: white;">
+              <option value="europe">Europe</option>
+              <option value="na">North America</option>
+              <option value="sa">South America</option>
+              <option value="asia">Asia</option>
+              <option value="africa">Africa</option>
+              <option value="australia">Australia</option>
+            </select>
+        
+            <label for="subject" style="color: white;">Subject</label>
+            <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
+        
+            <input type="submit" value="Submit">
+        
+          </form>
+        </div>
+    </div>
+</main>
+
+  <!-- <script  src="./script.js"></script> -->
+
+</body>
+</html>
